@@ -1,0 +1,2 @@
+# scs
+Scala Cache Server
