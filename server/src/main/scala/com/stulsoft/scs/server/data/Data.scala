@@ -49,24 +49,27 @@ object DataTableDAO extends TableQuery(new DataTable(_)) with LazyLogging {
     * @param key the key
     * @return the data for specified key
     */
-//  def getData(db: Database, key: String): Future[Option[Data]] = {
-  def getData(db: Database, key: String): Seq[Data] = {
+  def getData(db: Database, key: String): Future[Option[Data]] = {
     require(db != null, "db undefined")
     require(key != null && !key.isEmpty, "key undefined or empty")
-    logger.debug("getting data...")
-//    val data = Await.result(db.run(this.filter(_.key === key).result), 2.seconds).map(_.headOption)
-    val data = Await.result(db.run(this.filter(_.key === key).result), 2.seconds)
-    logger.debug("got data!")
-    data
+    db.run(this.filter(_.key === key).result).map(_.headOption)
   }
 
-  def putData(db: Database, key: String, value: String, ttl: Long): Unit = {
+  /**
+    * Stores (inserts or updates) a data
+    *
+    * @param db    the database
+    * @param key   the key
+    * @param value the value
+    * @param ttl   the ttl
+    * @return Future
+    */
+  def putData(db: Database, key: String, value: String, ttl: Long): Future[Unit] = {
     require(db != null, "db undefined")
     require(key != null && !key.isEmpty, "key undefined or empty")
     require(value != null && !value.isEmpty, "value undefined or empty")
-    logger.debug("putting data...")
-    val r =Await.result(db.run(this.insertOrUpdate(Data(key, value, ttl))), 2.seconds)
-    println(s"r=$r")
-    logger.debug("put data!")
+    Future {
+      db.run(this.insertOrUpdate(Data(key, value, ttl)))
+    }
   }
 }
