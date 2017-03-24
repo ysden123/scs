@@ -28,16 +28,18 @@ object Server extends App with LazyLogging {
   implicit val executionContext = system.dispatcher
 
   val version = "v.0.0"
-  val routes = path(version) {
-    get {
-      complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Get</h1>"))
-    } ~
-      put {
-        complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Put</h1>"))
+  val routes = pathPrefix(version) {
+    pathPrefix("key" / Remaining) { key =>
+      get {
+        complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, s"<h1>Get for key $key</h1>"))
       } ~
-      delete {
-        complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Delete</h1>"))
-      }
+        put {
+          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, s"<h1>Put for key $key</h1>"))
+        } ~
+        delete {
+          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, s"<h1>Delete for key $key</h1>"))
+        }
+    }
   }
   val bindingFuture = Http().bindAndHandle(routes, "localhost", 8080)
 
