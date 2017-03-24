@@ -4,17 +4,45 @@
 
 package com.stulsoft.scs.server
 
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import com.typesafe.scalalogging.LazyLogging
+import akka.http.scaladsl.{Http, server}
+import akka.http.scaladsl.model._
+import akka.http.scaladsl.server.Directives._
+import akka.stream.ActorMaterializer
+
+/*
 import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+*/
 
 /**
   * @author Yuriy Stul
   */
 object Server extends App with LazyLogging {
-  val db = Database.forConfig("h2mem1")
+  implicit val system = ActorSystem("scs-system")
+  implicit val materializer = ActorMaterializer()
+  implicit val executionContext = system.dispatcher
+
+  val version = "v.0.0"
+  val routes = path(version) {
+    get {
+      complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Get</h1>"))
+    } ~
+      put {
+        complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Put</h1>"))
+      } ~
+      delete {
+        complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Delete</h1>"))
+      }
+  }
+  val bindingFuture = Http().bindAndHandle(routes, "localhost", 8080)
+
+  logger.info(s"SCS started at http://localhost:8080/$version")
+  /*val db = Database.forConfig("h2mem1")
 
   logger.info("SCS started")
 
@@ -33,5 +61,5 @@ object Server extends App with LazyLogging {
   } finally
     db.close()
 
-  logger.info("SCS stopped")
+  logger.info("SCS stopped")*/
 }

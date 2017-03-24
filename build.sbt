@@ -5,6 +5,9 @@ lazy val scalaLoggingVersion = "3.5.0"
 lazy val slickVersion = "3.2.0"
 lazy val h2Version = "1.4.193"
 lazy val logbackVersion = "1.1.2"
+lazy val akkaVersion = "2.4.17"
+lazy val akkaHttpVersion = "10.0.5"
+lazy val json4sVersion = "3.5.1"
 
 lazy val commonSettings = Seq(
   organization := "com.stulsoft.scs",
@@ -16,8 +19,12 @@ lazy val commonSettings = Seq(
     "-language:implicitConversions",
     "-language:postfixOps"),
   libraryDependencies ++= Seq(
+    "org.json4s" %% "json4s-native" % json4sVersion,
     "ch.qos.logback" % "logback-classic" % logbackVersion,
     "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
+    "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+    "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+    "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
     "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
   )
 )

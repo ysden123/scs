@@ -7,6 +7,7 @@ package com.stulsoft.scs.server.data
 import com.stulsoft.scs.server.dataTable
 import com.typesafe.scalalogging.LazyLogging
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 import slick.jdbc.H2Profile.api._
 
@@ -19,6 +20,9 @@ import scala.concurrent.duration._
   * @author Yuriy Stul
   */
 class DataTableDAO$Test extends FlatSpec with BeforeAndAfter with Matchers with LazyLogging with ScalaFutures {
+  implicit val defaultPatience =
+    PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))
+
   var db: Database = _
 
   private def createSchema() =
