@@ -21,9 +21,9 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 /**
   * @author Yuriy Stul
   */
-class Service extends Directives with JsonSupport with LazyLogging {
+class Service(version: String) extends Directives with JsonSupport with LazyLogging {
   private lazy val dbService = new DbService()
-  val route: Route = pathPrefix("v.0.0") {
+  val route: Route = pathPrefix(version) {
     pathPrefix("key" / Remaining) { key =>
       get {
         Await.result(dbService.get(key), 2.seconds) match {
@@ -40,13 +40,16 @@ class Service extends Directives with JsonSupport with LazyLogging {
                 case Some(value) =>
                   complete(value.toString)
                 case _ =>
-                  complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, s"<h1>Failure</h1>"))
+                  complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Failure</h1>"))
               }
             }
           }
         } ~
         delete {
-          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, s"<h1>Delete for key $key</h1>"))
+          Await.result(dbService.delete(key), 2.seconds) match {
+            case Some(value) => complete(value.toString)
+            case _ => complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Failure</h1>"))
+          }
         }
     }
   }

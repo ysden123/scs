@@ -8,8 +8,7 @@ import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc.H2Profile.api._
 import slick.lifted.{ProvenShape, Rep, Tag}
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
 /**
   * Holds a data object details
@@ -70,6 +69,14 @@ object DataTableDAO extends TableQuery(new DataTable(_)) with LazyLogging {
     require(value != null && !value.isEmpty, "value undefined or empty")
     Future {
       db.run(this.insertOrUpdate(Data(key, value, ttl)))
+    }
+  }
+
+  def deleteData(db: Database, key: String): Future[Unit] = {
+    require(db != null, "db undefined")
+    require(key != null && !key.isEmpty, "key undefined or empty")
+    Future {
+      db.run(this.filter(_.key === key).delete)
     }
   }
 }

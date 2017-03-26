@@ -3,7 +3,7 @@
  */
 package com.stulsoft.scs.server
 
-import com.stulsoft.scs.server.data.Data
+import com.stulsoft.scs.server.data.{Data, DataTableDAO}
 import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc.H2Profile.api._
 
@@ -30,17 +30,27 @@ class DbService() extends LazyLogging {
 
   def get(key: String): Future[Option[Data]] = Future {
     try {
-      Integer.valueOf(key)
-      //      Some(Data(key, "the value", 0L))
-      Option(Data(key, "the value", 0L))
+      Await.result(DataTableDAO.getData(db, key), 2.seconds)
     } catch {
       case _: Exception => None
     }
   }
 
   def put(data: Data): Future[Option[Boolean]] = Future {
-    Option(true)
+    try {
+      Await.result(DataTableDAO.putData(db, data.key, data.value, data.ttl), 2.seconds)
+      Option(true)
+    } catch {
+      case _: Exception => Option(false)
+    }
   }
 
-  def delete(key: String): Future[Option[Boolean]] = ???
+  def delete(key: String): Future[Option[Boolean]] = Future {
+    try {
+      Await.result(DataTableDAO.deleteData(db, key), 2.seconds)
+      Option(true)
+    } catch {
+      case _: Exception => Option(false)
+    }
+  }
 }

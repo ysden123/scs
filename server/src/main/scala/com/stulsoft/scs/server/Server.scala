@@ -21,9 +21,10 @@ object Server extends App with LazyLogging {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
-  private val service = new Service
+  private val version = "v.0.0"
+  private val service = new Service(version)
   private val bindingFuture = Http().bindAndHandle(service.route, "localhost", 8080)
-  logger.info(s"SCS server started at http://localhost:8080/v.0.0")
+  logger.info(s"SCS server started at http://localhost:8080/$version")
 
   StdIn.readLine() // let it run until user presses return
   bindingFuture
