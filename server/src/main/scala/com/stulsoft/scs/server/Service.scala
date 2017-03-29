@@ -16,6 +16,7 @@ import scala.concurrent.duration._
 
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val dataFormat: RootJsonFormat[Data] = jsonFormat3(Data)
+  implicit val responseFormat: RootJsonFormat[Response] = jsonFormat3(Response)
 }
 
 /**
@@ -28,9 +29,9 @@ class Service(version: String) extends Directives with JsonSupport with LazyLogg
       get {
         Await.result(dbService.get(key), 2.seconds) match {
           case Some(value) =>
-            complete(value)
+            complete(Response(200, Some(value), None))
           case _ =>
-            complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, s"<h1>Failure</h1>"))
+            complete(Response(204, None, Some("not found")))
         }
       } ~
         put {
@@ -38,17 +39,19 @@ class Service(version: String) extends Directives with JsonSupport with LazyLogg
             data => {
               Await.result(dbService.put(data), 2.seconds) match {
                 case Some(value) =>
-                  complete(value.toString)
+                  complete(Response(200, None, None))
                 case _ =>
-                  complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Failure</h1>"))
+                  complete(Response(500, None, Some("internal error")))
               }
             }
           }
         } ~
         delete {
           Await.result(dbService.delete(key), 2.seconds) match {
-            case Some(value) => complete(value.toString)
-            case _ => complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Failure</h1>"))
+            case Some(value) =>
+              complete(Response(200, None, None))
+            case _ =>
+              complete(Response(500, None, Some("internal error")))
           }
         }
     }

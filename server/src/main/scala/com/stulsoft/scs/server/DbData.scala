@@ -4,20 +4,13 @@
 
 package com.stulsoft.scs.server.data
 
+import com.stulsoft.scs.common.data.Data
 import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc.H2Profile.api._
 import slick.lifted.{ProvenShape, Rep, Tag}
 
 import scala.concurrent.Future
 
-/**
-  * Holds a data object details
-  *
-  * @param key   the key
-  * @param value the value
-  * @param ttl   the TTL (maximum life time)
-  */
-case class Data(key: String, value: String, ttl: Long)
 
 /**
   * Table definition for Data objects
