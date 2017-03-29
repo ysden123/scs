@@ -4,7 +4,8 @@
 
 package com.stulsoft.scs.server.data
 
-import com.stulsoft.scs.server.dataTable
+import com.stulsoft.scs.common.data.Data
+import com.stulsoft.scs.server.{DataTableDAO, dataTable}
 import com.typesafe.scalalogging.LazyLogging
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}

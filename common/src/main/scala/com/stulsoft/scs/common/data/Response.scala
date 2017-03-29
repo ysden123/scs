@@ -2,9 +2,7 @@
  * Copyright (c) 2017. Yuriy Stul
  */
 
-package com.stulsoft.scs.server
-
-import com.stulsoft.scs.common.data.Data
+package com.stulsoft.scs.common.data
 
 /**
   * Response

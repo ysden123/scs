@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Yuriy Stul
  */
 
-package com.stulsoft.scs.server.data
+package com.stulsoft.scs.server
 
 import com.stulsoft.scs.common.data.Data
 import com.typesafe.scalalogging.LazyLogging

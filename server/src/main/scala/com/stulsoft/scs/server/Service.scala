@@ -4,20 +4,12 @@
 
 package com.stulsoft.scs.server
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.{Directives, Route}
-import com.stulsoft.scs.server.data.Data
+import com.stulsoft.scs.common.data.{Data, JsonSupport, Response}
 import com.typesafe.scalalogging.LazyLogging
-import spray.json._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-
-trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
-  implicit val dataFormat: RootJsonFormat[Data] = jsonFormat3(Data)
-  implicit val responseFormat: RootJsonFormat[Response] = jsonFormat3(Response)
-}
 
 /**
   * @author Yuriy Stul

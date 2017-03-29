@@ -3,12 +3,12 @@
  */
 package com.stulsoft.scs.server
 
-import com.stulsoft.scs.server.data.{Data, DataTableDAO}
+import com.stulsoft.scs.common.data.Data
 import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc.H2Profile.api._
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 /**
   * Database service

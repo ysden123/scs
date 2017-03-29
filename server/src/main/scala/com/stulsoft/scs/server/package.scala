@@ -4,7 +4,7 @@
 
 package com.stulsoft.scs
 
-import com.stulsoft.scs.server.data.DataTable
+import com.stulsoft.scs.server.DataTable
 import slick.lifted.TableQuery
 
 /**
