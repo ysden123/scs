@@ -17,7 +17,7 @@ import scala.io.StdIn
   * @author Yuriy Stul
   */
 object Server extends App with LazyLogging {
-  implicit val system = ActorSystem("scs-system")
+  implicit val system = ActorSystem("scs-server-system")
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
