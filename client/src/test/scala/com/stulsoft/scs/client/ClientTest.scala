@@ -1,5 +1,7 @@
 package com.stulsoft.scs.client
 
+import com.stulsoft.scs.client.ClientTest.client
+import com.stulsoft.scs.common.data.Data
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.Await
@@ -10,10 +12,26 @@ import scala.concurrent.duration._
   */
 object ClientTest extends App with LazyLogging {
   logger.info("Started ClientTest")
-  val client = new Client()
+  lazy val client = new Client()
 
-  val r1 = Await.result(client.getData("1"), 2.seconds)
-  println(s"r1: $r1")
-  println(s"status: ${r1.status}, data: ${r1.data}, error message: ${r1.errorMessage}")
+  def testGet(client: Client): Unit = {
+    println("==>testGet")
+    val r = Await.result(client.getData("1"), 2.seconds)
+    println(s"r: $r")
+    println(s"status: ${r.status}, data: ${r.data}, error message: ${r.errorMessage}")
+    println("<==testGet")
+  }
+
+  def testPut(client: Client): Unit = {
+    println("==>testPut")
+    val r = Await.result(client.putData(Data("1", "value 11", 0)), 2.seconds)
+    println(s"r: $r")
+    println(s"status: ${r.status}, data: ${r.data}, error message: ${r.errorMessage}")
+    println("<==testPut")
+  }
+
+  testPut(client)
+  testGet(client)
+
   logger.info("Stopped ClientTest")
 }
