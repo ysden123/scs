@@ -7,6 +7,7 @@ package com.stulsoft.scs.server
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
+import com.stulsoft.scs.common.data._
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.io.StdIn
@@ -21,8 +22,7 @@ object Server extends App with LazyLogging {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
-  private val version = "v.0.0"
-  private val service = new Service(version)
+  private val service = new Service()
   private val bindingFuture = Http().bindAndHandle(service.route, "localhost", 8080)
   logger.info(s"SCS server started at http://localhost:8080/$version")
 

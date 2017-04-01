@@ -5,7 +5,7 @@
 package com.stulsoft.scs.server
 
 import akka.http.scaladsl.server.{Directives, Route}
-import com.stulsoft.scs.common.data.{Data, JsonSupport, Response}
+import com.stulsoft.scs.common.data.{Data, JsonSupport, Response, _}
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.Await
@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 /**
   * @author Yuriy Stul
   */
-class Service(version: String) extends Directives with JsonSupport with LazyLogging {
+class Service extends Directives with JsonSupport with LazyLogging {
   private lazy val dbService = new DbService()
   val route: Route = pathPrefix(version) {
     pathPrefix("key" / Remaining) { key =>
@@ -30,7 +30,7 @@ class Service(version: String) extends Directives with JsonSupport with LazyLogg
           entity(as[Data]) {
             data => {
               Await.result(dbService.put(data), 2.seconds) match {
-                case Some(value) =>
+                case Some(_) =>
                   complete(Response(200, None, None))
                 case _ =>
                   complete(Response(500, None, Some("internal error")))
