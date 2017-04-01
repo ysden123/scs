@@ -25,12 +25,13 @@ import scala.concurrent.duration._
 class Client extends JsonSupport with LazyLogging {
   implicit val system = ActorSystem("scs-client-system")
   implicit val materializer = ActorMaterializer()
+
   import scala.concurrent.ExecutionContext.Implicits.global
 
   private val version = "v.0.0"
 
   def getData(key: String): Future[Response] = {
-    val source = Source.single(HttpRequest(method = HttpMethods.GET, uri = Uri(path = Path(s"/$version/key/1"))))
+    val source = Source.single(HttpRequest(method = HttpMethods.GET, uri = Uri(path = Path(s"/$version/key/$key"))))
     val flow = Http().outgoingConnection("localhost", 8080).mapAsync(1) {
       r => Unmarshal(r.entity).to[Response]
     }
@@ -40,7 +41,7 @@ class Client extends JsonSupport with LazyLogging {
   def putData(data: Data): Future[Response] = {
     val entity = Await.result(Marshal(data).to[RequestEntity], 1.seconds)
     val source = Source.single(HttpRequest(method = HttpMethods.PUT
-      , uri = Uri(path = Path(s"/$version/key/1"))
+      , uri = Uri(path = Path(s"/$version/key/${data.key}"))
       , entity = entity))
     val flow = Http().outgoingConnection("localhost", 8080).mapAsync(1) {
       r => Unmarshal(r.entity).to[Response]
@@ -48,9 +49,11 @@ class Client extends JsonSupport with LazyLogging {
     source.via(flow).runWith(Sink.head)
   }
 
-  def deleteData(key: String): Future[Option[Boolean]] = ???
-
-  logger.info("Started client")
-
-  logger.info("Stopped client")
+  def deleteData(key: String): Future[Response] = {
+    val source = Source.single(HttpRequest(method = HttpMethods.DELETE, uri = Uri(path = Path(s"/$version/key/$key"))))
+    val flow = Http().outgoingConnection("localhost", 8080).mapAsync(1) {
+      r => Unmarshal(r.entity).to[Response]
+    }
+    source.via(flow).runWith(Sink.head)
+  }
 }
