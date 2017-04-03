@@ -12,6 +12,8 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 /**
+  * SCS Service for server
+  *
   * @author Yuriy Stul
   */
 class Service extends Directives with JsonSupport with LazyLogging {

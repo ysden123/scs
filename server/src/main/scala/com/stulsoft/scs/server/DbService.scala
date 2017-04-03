@@ -28,6 +28,12 @@ class DbService() extends LazyLogging {
   Await.result(db.run(setup), 2.seconds)
   logger.info("Database initialization completed")
 
+  /**
+    * Returns a data for specified key
+    *
+    * @param key specifies the data to find
+    * @return the data for specified key
+    */
   def get(key: String): Future[Option[Data]] = Future {
     try {
       Await.result(DataTableDAO.getData(db, key), 2.seconds)
@@ -36,6 +42,12 @@ class DbService() extends LazyLogging {
     }
   }
 
+  /**
+    * Stores a data into database
+    *
+    * @param data the data to store
+    * @return result of saving
+    */
   def put(data: Data): Future[Option[Boolean]] = Future {
     try {
       Await.result(DataTableDAO.putData(db, data.key, data.value, data.ttl), 2.seconds)
@@ -45,6 +57,12 @@ class DbService() extends LazyLogging {
     }
   }
 
+  /**
+    * Deletes a data with specified key
+    *
+    * @param key specifies the data to delete
+    * @return result of deleting
+    */
   def delete(key: String): Future[Option[Boolean]] = Future {
     try {
       Await.result(DataTableDAO.deleteData(db, key), 2.seconds)
