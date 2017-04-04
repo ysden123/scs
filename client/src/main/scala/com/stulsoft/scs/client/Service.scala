@@ -23,12 +23,41 @@ import scala.concurrent.{Await, Future}
   *
   * @author Yuriy Stul
   */
-protected class Service(val host: String, val port: Int) extends JsonSupport with LazyLogging {
+protected sealed class Service(val host: String, val port: Int) extends JsonSupport with LazyLogging {
   require(host != null && !host.isEmpty, "host should be defined")
-  implicit val system = ActorSystem("scs-client-system")
-  implicit val materializer = ActorMaterializer()
+  //  implicit val system = ActorSystem("scs-client-system")
+  implicit var system: ActorSystem = _
+  //  implicit val materializer = ActorMaterializer()
+  implicit var materializer: ActorMaterializer = _
 
   import scala.concurrent.ExecutionContext.Implicits.global
+
+  /**
+    * Starts service
+    */
+  def start(): Unit = {
+    if (system == null) {
+      system = ActorSystem("scs-client-system")
+      materializer = ActorMaterializer()
+    }
+  }
+
+  /**
+    * Stops service
+    */
+  def stop(): Unit = {
+    if (system != null) {
+      materializer.shutdown()
+      system.terminate()
+    }
+  }
+
+  /**
+    * Checks, whether the service is started
+    *
+    * @return
+    */
+  def isStarted: Boolean = system != null
 
   /**
     * Returns a data for specified key

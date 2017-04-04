@@ -11,7 +11,22 @@ import scala.concurrent.Future
   */
 sealed class Client(val host: String, val port: Int) {
   require(host != null && !host.isEmpty, "host should be defined")
+  private val OPEN_CLIENT = " \"Open client before\""
   private val service = Service(host, port)
+
+  /**
+    * Initializes a client
+    */
+  def open(): Unit = {
+    service.start()
+  }
+
+  /**
+    * Closes a client
+    */
+  def close(): Unit = {
+    service.stop()
+  }
 
   /**
     * Returns a data for specified key
@@ -19,7 +34,10 @@ sealed class Client(val host: String, val port: Int) {
     * @param key specifies the data to find
     * @return the data for specified key
     */
-  def getData(key: String): Future[Response] = service.getData(key)
+  def getData(key: String): Future[Response] = {
+    if (!service.isStarted) throw new RuntimeException(OPEN_CLIENT)
+    service.getData(key)
+  }
 
   /**
     * Stores a data
@@ -27,7 +45,10 @@ sealed class Client(val host: String, val port: Int) {
     * @param data the data to store
     * @return result of saving the data
     */
-  def putData(data: Data): Future[Response] = service.putData(data)
+  def putData(data: Data): Future[Response] = {
+    if (!service.isStarted) throw new RuntimeException(OPEN_CLIENT)
+    service.putData(data)
+  }
 
   /**
     * Deletes a data with specified key
@@ -35,7 +56,11 @@ sealed class Client(val host: String, val port: Int) {
     * @param key specifies the data to delete
     * @return result of deleting the data
     */
-  def deleteData(key: String): Future[Response] = service.deleteData(key)
+  def deleteData(key: String): Future[Response] = {
+    if (!service.isStarted) throw new RuntimeException(OPEN_CLIENT)
+    service.deleteData(key)
+  }
+
 }
 
 object Client {

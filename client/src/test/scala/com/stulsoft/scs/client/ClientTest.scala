@@ -37,10 +37,22 @@ object ClientTest extends App with LazyLogging {
     println("<==testPut")
   }
 
-  testPut(client)
-  testGet(client)
-  testDelete(client)
-  testGet(client)
+  try {
+    testGet(client)
+  } catch {
+    case e: Exception => println(e.getMessage)
+  }
 
+  client.open()
+  try {
+    testPut(client)
+    testGet(client)
+    testDelete(client)
+    testGet(client)
+  }
+  catch {
+    case e: Exception => println(s"Exception: ${e.getMessage}")
+  }
+  finally client.close()
   logger.info("Stopped ClientTest")
 }
