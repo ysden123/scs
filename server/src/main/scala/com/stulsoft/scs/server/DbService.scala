@@ -4,6 +4,7 @@
 package com.stulsoft.scs.server
 
 import com.stulsoft.scs.common.data.Data
+import com.stulsoft.scs.server.data.DataTableDAO
 import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc.H2Profile.api._
 
@@ -21,7 +22,7 @@ class DbService() extends LazyLogging {
 
   private val db = Database.forConfig("h2mem1")
   private val setup = DBIO.seq(
-    dataTable.schema.create
+    (dataTable.schema ++ ttlTable.schema).create
   )
 
   logger.info("Database initialization started")

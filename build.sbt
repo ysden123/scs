@@ -58,3 +58,9 @@ lazy val common = (project in file("common"))
   .settings(
     name := "common"
   )
+
+//parallelExecution in Test := false
+//parallelExecution in ThisBuild := false
+
+
+/*parallelExecution in IntegrationTest := false*/
