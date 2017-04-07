@@ -4,19 +4,19 @@
 package com.stulsoft.scs.server
 
 import com.stulsoft.scs.common.data.Data
-import com.stulsoft.scs.server.data.DataTableDAO
+import com.stulsoft.scs.server.data.{DataTableDAO, Ttl, TtlTableDAO}
 import com.typesafe.scalalogging.LazyLogging
 import slick.jdbc.H2Profile.api._
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 /**
   * Data service
   *
   * @author Yuriy Stul
   */
-class DataService() extends LazyLogging{
+class DataService() extends LazyLogging {
   db = Database.forConfig("h2mem1")
   private val setup = DBIO.seq(
     (dataTable.schema ++ ttlTable.schema).create
@@ -27,6 +27,7 @@ class DataService() extends LazyLogging{
   logger.info("Database initialization completed")
 
   import scala.concurrent.ExecutionContext.Implicits.global
+
   /**
     * Returns a data for specified key
     *
@@ -50,6 +51,7 @@ class DataService() extends LazyLogging{
   def putData(data: Data): Future[Option[Boolean]] = Future {
     try {
       Await.result(DataTableDAO.putData(db, data.key, data.value, data.ttl), 2.seconds)
+      TtlTableDAO.putTtl(db, Ttl(data.key, data.ttl, System.currentTimeMillis))
       Option(true)
     } catch {
       case _: Exception => Option(false)
@@ -65,6 +67,7 @@ class DataService() extends LazyLogging{
   def deleteData(key: String): Future[Option[Boolean]] = Future {
     try {
       Await.result(DataTableDAO.deleteData(db, key), 2.seconds)
+      TtlTableDAO.deleteTtl(db, key)
       Option(true)
     } catch {
       case _: Exception => Option(false)
