@@ -19,41 +19,42 @@ class TtlTableDAO$Test extends FlatSpec with Matchers with LazyLogging with Scal
   behavior of "TtlTableDAO"
 
   "putTtl" should "add new ttl" in {
-    Await.result(TtlTableDAO.putTtl(db, Ttl("key1", 123, 1000L)), 2.seconds)
-    val ttl = Await.result(TtlTableDAO.getTtl(db, "key1"), 2.seconds)
+    Await.result(TtlTableDAO.putTtl(dbTest, Ttl("key1", 123, 1000L)), 2.seconds)
+    val ttl = Await.result(TtlTableDAO.getTtl(dbTest, "key1"), 2.seconds)
     ttl.isDefined should equal(true)
     ttl.get should equal(Ttl("key1", 123, 1000L))
   }
 
   it should "update existing ttl" in {
-    Await.result(TtlTableDAO.putTtl(db, Ttl("key1", 123, 1000L)), 2.seconds)
-    Await.result(TtlTableDAO.putTtl(db, Ttl("key1", 123, 2000L)), 2.seconds)
-    val ttl = Await.result(TtlTableDAO.getTtl(db, "key1"), 2.seconds)
+    Await.result(TtlTableDAO.putTtl(dbTest, Ttl("key1", 123, 1000L)), 2.seconds)
+    Await.result(TtlTableDAO.putTtl(dbTest, Ttl("key1", 123, 2000L)), 2.seconds)
+    val ttl = Await.result(TtlTableDAO.getTtl(dbTest, "key1"), 2.seconds)
     ttl.isDefined should equal(true)
     ttl.get should equal(Ttl("key1", 123, 2000L))
   }
 
   "getTtl" should "get ttl" in {
-    Await.result(TtlTableDAO.putTtl(db, Ttl("key1", 123, 1000L)), 2.seconds)
-    val ttl = Await.result(TtlTableDAO.getTtl(db, "key1"), 2.seconds)
+    Await.result(TtlTableDAO.putTtl(dbTest, Ttl("key1", 123, 1000L)), 2.seconds)
+    val ttl = Await.result(TtlTableDAO.getTtl(dbTest, "key1"), 2.seconds)
     ttl.isDefined should equal(true)
     ttl.get should equal(Ttl("key1", 123, 1000L))
+    ttl.get.startDate should equal(1000L)
   }
 
   it should "return empty ttl for non-existing key" in {
-    Await.result(TtlTableDAO.deleteTtl(db, "key1"), 2.seconds)
-    val ttl = Await.result(TtlTableDAO.getTtl(db, "key1"), 2.seconds)
+    Await.result(TtlTableDAO.deleteTtl(dbTest, "key1"), 2.seconds)
+    val ttl = Await.result(TtlTableDAO.getTtl(dbTest, "key1"), 2.seconds)
     ttl.isDefined should equal(false)
   }
 
   "delete" should "delete existing ttl" in {
-    Await.result(TtlTableDAO.putTtl(db, Ttl("key1", 123, 1000L)), 2.seconds)
-    Await.result(TtlTableDAO.deleteTtl(db, "key1"), 2.seconds)
-    val ttl = Await.result(TtlTableDAO.getTtl(db, "key1"), 2.seconds)
+    Await.result(TtlTableDAO.putTtl(dbTest, Ttl("key1", 123, 1000L)), 2.seconds)
+    Await.result(TtlTableDAO.deleteTtl(dbTest, "key1"), 2.seconds)
+    val ttl = Await.result(TtlTableDAO.getTtl(dbTest, "key1"), 2.seconds)
     ttl.isDefined should equal(false)
   }
 
   it should "work with non-existing ttl" in {
-    Await.result(TtlTableDAO.deleteTtl(db, "key1"), 2.seconds)
+    Await.result(TtlTableDAO.deleteTtl(dbTest, "key1"), 2.seconds)
   }
 }

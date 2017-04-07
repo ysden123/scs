@@ -22,7 +22,10 @@ object Server extends App with LazyLogging {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
-  private val service = new Service()
+  private val service = new Service
+  private val ttlService = new TtlService
+  ttlService.start()
+
   private val bindingFuture = Http().bindAndHandle(service.route, "localhost", 8080)
   logger.info(s"SCS server started at http://localhost:8080/$version")
 
@@ -30,7 +33,8 @@ object Server extends App with LazyLogging {
   bindingFuture
     .flatMap(_.unbind()) // trigger unbinding from the port
     .onComplete { _ =>
-    logger.info("SCS stopped")
+    ttlService.stop()
     system.terminate()
+    logger.info("SCS stopped")
   } // and shutdown when done
 }

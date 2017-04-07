@@ -65,6 +65,13 @@ object DataTableDAO extends TableQuery(new DataTable(_)) with LazyLogging {
     }
   }
 
+  /**
+    * Deletes a data
+    *
+    * @param db  the database
+    * @param key the key
+    * @return Future
+    */
   def deleteData(db: Database, key: String): Future[Unit] = {
     require(db != null, "db undefined")
     require(key != null && !key.isEmpty, "key undefined or empty")

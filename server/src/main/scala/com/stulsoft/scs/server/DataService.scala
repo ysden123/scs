@@ -6,7 +6,6 @@ package com.stulsoft.scs.server
 import com.stulsoft.scs.common.data.Data
 import com.stulsoft.scs.server.data.{DataTableDAO, Ttl, TtlTableDAO}
 import com.typesafe.scalalogging.LazyLogging
-import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -17,14 +16,6 @@ import scala.concurrent.{Await, Future}
   * @author Yuriy Stul
   */
 class DataService() extends LazyLogging {
-  db = Database.forConfig("h2mem1")
-  private val setup = DBIO.seq(
-    (dataTable.schema ++ ttlTable.schema).create
-  )
-
-  logger.info("Database initialization started")
-  Await.result(db.run(setup), 2.seconds)
-  logger.info("Database initialization completed")
 
   import scala.concurrent.ExecutionContext.Implicits.global
 

@@ -25,41 +25,41 @@ class DataTableDAO$Test extends FlatSpec with Matchers with LazyLogging with Sca
   behavior of "DataTableDAO"
 
   "putData" should "add new data" in {
-    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 2.seconds)
-    val d = Await.result(DataTableDAO.getData(db, "key1"), 2.seconds)
+    Await.result(DataTableDAO.putData(dbTest, "key1", "value1", 0L), 2.seconds)
+    val d = Await.result(DataTableDAO.getData(dbTest, "key1"), 2.seconds)
     d.isDefined should equal(true)
     d.get should equal(Data("key1", "value1", 0L))
   }
 
   it should "update existing data" in {
-    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 2.seconds)
-    Await.result(DataTableDAO.putData(db, "key1", "value2", 0L), 2.seconds)
-    val d = Await.result(DataTableDAO.getData(db, "key1"), 2.seconds)
+    Await.result(DataTableDAO.putData(dbTest, "key1", "value1", 0L), 2.seconds)
+    Await.result(DataTableDAO.putData(dbTest, "key1", "value2", 0L), 2.seconds)
+    val d = Await.result(DataTableDAO.getData(dbTest, "key1"), 2.seconds)
     d.isDefined should equal(true)
     d.get should equal(Data("key1", "value2", 0L))
   }
 
   "getData" should "return data" in {
-    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 2.seconds)
-    val d = Await.result(DataTableDAO.getData(db, "key1"), 2.seconds)
+    Await.result(DataTableDAO.putData(dbTest, "key1", "value1", 0L), 2.seconds)
+    val d = Await.result(DataTableDAO.getData(dbTest, "key1"), 2.seconds)
     d.isDefined should equal(true)
     d.get should equal(Data("key1", "value1", 0L))
   }
 
   it should "return empty data for non-existing key" in {
-    Await.result(DataTableDAO.deleteData(db, "key1"), 2.seconds)
-    val d = Await.result(DataTableDAO.getData(db, "key1"), 2.seconds)
+    Await.result(DataTableDAO.deleteData(dbTest, "key1"), 2.seconds)
+    val d = Await.result(DataTableDAO.getData(dbTest, "key1"), 2.seconds)
     d.isDefined should equal(false)
   }
 
   "deleteData" should "delete existing data" in {
-    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 2.seconds)
-    Await.result(DataTableDAO.deleteData(db, "key1"), 2.seconds)
-    val d = Await.result(DataTableDAO.getData(db, "key1"), 2.seconds)
+    Await.result(DataTableDAO.putData(dbTest, "key1", "value1", 0L), 2.seconds)
+    Await.result(DataTableDAO.deleteData(dbTest, "key1"), 2.seconds)
+    val d = Await.result(DataTableDAO.getData(dbTest, "key1"), 2.seconds)
     d.isDefined should equal(false)
   }
 
   it should "work for non-existing data" in {
-    Await.result(DataTableDAO.deleteData(db, "key1"), 2.seconds)
+    Await.result(DataTableDAO.deleteData(dbTest, "key1"), 2.seconds)
   }
 }
