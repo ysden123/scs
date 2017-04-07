@@ -5,12 +5,10 @@
 package com.stulsoft.scs.server.data
 
 import com.stulsoft.scs.common.data.Data
-import com.stulsoft.scs.server.{dataTable, ttlTable}
 import com.typesafe.scalalogging.LazyLogging
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
-import slick.jdbc.H2Profile.api._
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -20,72 +18,48 @@ import scala.concurrent.duration._
   *
   * @author Yuriy Stul
   */
-class DataTableDAO$Test extends FlatSpec with BeforeAndAfter with Matchers with LazyLogging with ScalaFutures {
+class DataTableDAO$Test extends FlatSpec with Matchers with LazyLogging with ScalaFutures {
   implicit val defaultPatience =
     PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))
-
-  var db: Database = _
-
-  private def createSchema() =
-    db.run(dataTable.schema.create).futureValue
-
-  before {
-    db = Database.forConfig("h2mem1")
-  }
 
   behavior of "DataTableDAO"
 
   "putData" should "add new data" in {
-    createSchema()
-
-    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 20.seconds)
+    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 2.seconds)
     val d = Await.result(DataTableDAO.getData(db, "key1"), 2.seconds)
     d.isDefined should equal(true)
     d.get should equal(Data("key1", "value1", 0L))
   }
 
   it should "update existing data" in {
-    createSchema()
-
-    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 20.seconds)
-    Await.result(DataTableDAO.putData(db, "key1", "value2", 0L), 20.seconds)
+    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 2.seconds)
+    Await.result(DataTableDAO.putData(db, "key1", "value2", 0L), 2.seconds)
     val d = Await.result(DataTableDAO.getData(db, "key1"), 2.seconds)
     d.isDefined should equal(true)
     d.get should equal(Data("key1", "value2", 0L))
   }
 
   "getData" should "return data" in {
-    createSchema()
-
-    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 20.seconds)
-    val d = Await.result(DataTableDAO.getData(db, "key1"), 20.seconds)
+    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 2.seconds)
+    val d = Await.result(DataTableDAO.getData(db, "key1"), 2.seconds)
     d.isDefined should equal(true)
     d.get should equal(Data("key1", "value1", 0L))
   }
 
   it should "return empty data for non-existing key" in {
-    createSchema()
-
-    val d = Await.result(DataTableDAO.getData(db, "key1"), 20.seconds)
+    Await.result(DataTableDAO.deleteData(db, "key1"), 2.seconds)
+    val d = Await.result(DataTableDAO.getData(db, "key1"), 2.seconds)
     d.isDefined should equal(false)
   }
 
   "deleteData" should "delete existing data" in {
-    createSchema()
-
-    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 20.seconds)
-    Await.result(DataTableDAO.deleteData(db, "key1"), 20.seconds)
+    Await.result(DataTableDAO.putData(db, "key1", "value1", 0L), 2.seconds)
+    Await.result(DataTableDAO.deleteData(db, "key1"), 2.seconds)
     val d = Await.result(DataTableDAO.getData(db, "key1"), 2.seconds)
     d.isDefined should equal(false)
   }
 
   it should "work for non-existing data" in {
-    createSchema()
-
-    Await.result(DataTableDAO.deleteData(db, "key1"), 20.seconds)
-  }
-
-  after {
-    db.close
+    Await.result(DataTableDAO.deleteData(db, "key1"), 2.seconds)
   }
 }

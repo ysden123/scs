@@ -17,11 +17,11 @@ import scala.concurrent.duration._
   * @author Yuriy Stul
   */
 class Service extends Directives with JsonSupport with LazyLogging {
-  private lazy val dbService = new DbService()
+  private lazy val dbService = new DataService()
   val route: Route = pathPrefix(version) {
     pathPrefix("key" / Remaining) { key =>
       get {
-        Await.result(dbService.get(key), 2.seconds) match {
+        Await.result(dbService.getData(key), 2.seconds) match {
           case Some(value) =>
             complete(Response(200, Some(value), None))
           case _ =>
@@ -31,7 +31,7 @@ class Service extends Directives with JsonSupport with LazyLogging {
         put {
           entity(as[Data]) {
             data => {
-              Await.result(dbService.put(data), 2.seconds) match {
+              Await.result(dbService.putData(data), 2.seconds) match {
                 case Some(_) =>
                   complete(Response(200, None, None))
                 case _ =>
@@ -41,7 +41,7 @@ class Service extends Directives with JsonSupport with LazyLogging {
           }
         } ~
         delete {
-          Await.result(dbService.delete(key), 2.seconds) match {
+          Await.result(dbService.deleteData(key), 2.seconds) match {
             case Some(value) =>
               complete(Response(200, None, None))
             case _ =>
