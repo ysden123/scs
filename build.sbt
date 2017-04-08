@@ -10,7 +10,7 @@ lazy val akkaHttpVersion = "10.0.5"
 
 lazy val commonSettings = Seq(
   organization := "com.stulsoft.scs",
-  version := "0.0.1-SNAPSHOT",
+  version := "0.1.1-SNAPSHOT",
   scalaVersion := "2.12.1",
   ivyScala := ivyScala.value map {
     _.copy(overrideScalaVersion = true)
@@ -58,9 +58,3 @@ lazy val common = (project in file("common"))
   .settings(
     name := "common"
   )
-
-//parallelExecution in Test := false
-//parallelExecution in ThisBuild := false
-
-
-/*parallelExecution in IntegrationTest := false*/
