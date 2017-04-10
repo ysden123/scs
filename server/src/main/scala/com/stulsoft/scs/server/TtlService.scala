@@ -1,10 +1,9 @@
 package com.stulsoft.scs.server
 
-import akka.actor.ActorSystem
-import com.stulsoft.scs.server.data.{DataTableDAO, TtlTableDAO}
+import akka.actor.{ActorRef, ActorSystem}
+import com.stulsoft.scs.server.actor.CheckTtl
 import com.typesafe.scalalogging.LazyLogging
 
-import scala.concurrent.Await
 import scala.concurrent.duration._
 
 /**
@@ -12,7 +11,8 @@ import scala.concurrent.duration._
   *
   * @author Yuriy Stul
   */
-class TtlService extends LazyLogging {
+class TtlService(val dbActor: ActorRef) extends LazyLogging {
+  require(dbActor != null, "dbActor should be defined")
   implicit val system = ActorSystem("scs-server-ttl-system")
   //Use the system's dispatcher as ExecutionContext
   import system.dispatcher
@@ -25,10 +25,7 @@ class TtlService extends LazyLogging {
   }
 
   private def checkTtl(): Unit = {
-    Await.result(TtlTableDAO.getExpiredTtls(db), 2.seconds).foreach(ttl => {
-      DataTableDAO.deleteData(db, ttl.key)
-      TtlTableDAO.deleteTtl(db, ttl.key)
-    })
+    dbActor ! CheckTtl
   }
 
   def stop(): Unit = {

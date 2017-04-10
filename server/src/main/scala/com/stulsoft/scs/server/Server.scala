@@ -4,10 +4,11 @@
 
 package com.stulsoft.scs.server
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorSystem, Props}
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.stulsoft.scs.common.data._
+import com.stulsoft.scs.server.actor.DBActor
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.io.StdIn
@@ -22,8 +23,10 @@ object Server extends App with LazyLogging {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
-  private val service = new Service
-  private val ttlService = new TtlService
+  private val dbActor = system.actorOf(Props[DBActor])
+  private val service = new Service(dbActor)
+  private val ttlService = new TtlService(dbActor)
+
   ttlService.start()
 
   private val bindingFuture = Http().bindAndHandle(service.route, "localhost", 8080)
