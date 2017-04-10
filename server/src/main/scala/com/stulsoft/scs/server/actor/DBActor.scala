@@ -16,6 +16,8 @@ case class DbPut(data: Data)
 
 case class DbDelete(key: String)
 
+case object CheckTtl
+
 /**
   * @author Yuriy Stul
   */
@@ -27,6 +29,11 @@ class DBActor extends Actor with ActorLogging {
       sender ! Await.result(putData(x.data), 2.seconds)
     case x: DbDelete =>
       sender ! Await.result(deleteData(x.key), 2.seconds)
+    case CheckTtl =>
+      Await.result(TtlTableDAO.getExpiredTtls(db), 2.seconds).foreach(ttl => {
+        DataTableDAO.deleteData(db, ttl.key)
+        TtlTableDAO.deleteTtl(db, ttl.key)
+      })
   }
 
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -85,7 +92,7 @@ object TestForDBActor extends App {
   Thread.sleep(500)
   implicit val timeout = Timeout(2.seconds)
   // add
-  val futureAdd = dbActor ? DbPut(Data("123","text", 1000))
+  val futureAdd = dbActor ? DbPut(Data("123", "text", 1000))
   val resultAdd = Await.result(futureAdd, timeout.duration)
   println(s"add: result is $resultAdd")
 

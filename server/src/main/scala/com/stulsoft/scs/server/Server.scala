@@ -23,8 +23,10 @@ object Server extends App with LazyLogging {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
-  private val service = new Service(system.actorOf(Props[DBActor]))
-  private val ttlService = new TtlService
+  private val dbActor = system.actorOf(Props[DBActor])
+  private val service = new Service(dbActor)
+  private val ttlService = new TtlService(dbActor)
+
   ttlService.start()
 
   private val bindingFuture = Http().bindAndHandle(service.route, "localhost", 8080)
