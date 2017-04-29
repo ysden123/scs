@@ -11,7 +11,7 @@ lazy val akkaHttpVersion = "10.0.5"
 lazy val commonSettings = Seq(
   organization := "com.stulsoft.scs",
   version := "0.1.1-SNAPSHOT",
-  scalaVersion := "2.12.1",
+  scalaVersion := "2.12.2",
   ivyScala := ivyScala.value map {
     _.copy(overrideScalaVersion = true)
   },
